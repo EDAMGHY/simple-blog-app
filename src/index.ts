@@ -5,6 +5,7 @@ import cors from "cors";
 
 import { connectDB } from "@/config";
 import { BlogRoutes, UserRoutes } from "@/routes";
+import { errorHandler, notFound } from "@/middleware";
 
 //For env File
 dotenv.config();
@@ -25,6 +26,9 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/v1/users", UserRoutes);
 app.use("/api/v1/blogs", BlogRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is Fire at http://localhost:${PORT}`);

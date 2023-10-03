@@ -13,7 +13,7 @@ const router = Router();
 
 router.route("/me").get(getCUBlogs);
 router.route("/").get(getAllBlogs).post(createBlog);
-router.route("/:id").get(getBlog);
+router.route("/:id/blog").get(getBlog);
 router.route("/:id/edit").put(updateBlog);
 router.route("/:id/delete").delete(deleteBlog);
 
