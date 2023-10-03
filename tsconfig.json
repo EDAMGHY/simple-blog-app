@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "target": "es2016",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/config": ["./src/config/index"],
+      "@/types": ["./src/types/index"],
+      "@/models": ["./src/models/index"],
+      "@/controllers": ["./src/controllers/index"],
+      "@/routes": ["./src/routes/index"]
+    }
+  }
+}
