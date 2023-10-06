@@ -1,4 +1,5 @@
-import { Request, Response } from "express";
+import { Response } from "express";
+import { IUser, Request } from "@/types";
 import asyncHandler from "express-async-handler";
 import { User } from "@/models";
 import {
@@ -6,6 +7,7 @@ import {
   checkField,
   generateToken,
   sendErrorResponse,
+  createdUser,
 } from "@/helpers";
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
@@ -15,22 +17,21 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     sendErrorResponse(res, "Please fill all the fields...", 400);
   }
 
-  const user = await User.findOne({
+  const user: IUser | null = await User.findOne({
     $or: [{ username: identifier }, { email: identifier }],
   });
 
-  const isMatchedPasswords = await user?.matchPasswords(password);
+  const isMatchedPasswords = await user?.matchPasswords?.(password);
 
   if (!user || !isMatchedPasswords) {
     sendErrorResponse(res, "Invalid email or password", 400);
   }
 
-  const createdUser = { ...user?.toObject() };
-  delete createdUser?.password;
+  const CUser = createdUser(user);
 
   generateToken(res, user?._id);
 
-  sendSuccessResponse(res, createdUser, "User Successfully Logged in...", 200);
+  sendSuccessResponse(res, CUser, "User Successfully Logged in...", 200);
 });
 
 export const register = asyncHandler(async (req: Request, res: Response) => {
@@ -58,16 +59,21 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
 
   await user.save();
 
-  const createdUser = { ...user?.toObject() };
-  delete createdUser?.password;
+  const CUser = createdUser(user);
 
   generateToken(res, user?._id);
 
-  sendSuccessResponse(res, createdUser, "User Successfully Registered...");
+  sendSuccessResponse(res, CUser, "User Successfully Registered...");
 });
 
 export const logout = asyncHandler(async (req: Request, res: Response) => {
-  res.cookie(process.env.COOKIE_NAME, "", {
+  const cookieName = process.env.COOKIE_NAME;
+
+  if (!cookieName) {
+    throw new Error("[COOKIE_NAME] environment variable is not defined.");
+  }
+
+  res.cookie(cookieName, "", {
     httpOnly: true,
     expires: new Date(0),
   });

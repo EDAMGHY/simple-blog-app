@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
-import { Request, Response } from "express";
+import { Response } from "express";
+import { Request } from "@/types";
 import { sendErrorResponse, sendSuccessResponse } from "@/helpers";
 import { Blog } from "@/models";
 
@@ -14,13 +15,14 @@ export const getAllBlogs = asyncHandler(async (req: Request, res: Response) => {
 
 export const getCUBlogs = asyncHandler(async (req: Request, res: Response) => {
   const userID = req?.user?._id;
+  const username = req?.user?.username;
 
   const blogs = await Blog.find({ user: userID });
 
   sendSuccessResponse(
     res,
     { count: blogs.length, blogs },
-    `[${req?.user?.username}] Blogs Fetched Successfully...`
+    `[${username}] Blogs Fetched Successfully...`
   );
 });
 
@@ -85,11 +87,13 @@ export const updateBlog = asyncHandler(async (req: Request, res: Response) => {
       `You don't OWN this resource OR There is no blog with the ID [${id}]`,
       404
     );
+    return; // Return early to avoid further processing
   }
 
-  if (title) blog.title = title;
-  if (category) blog.category = category;
-  if (body) blog.body = body;
+  // Use optional chaining and nullish coalescing operator to safely update properties
+  blog.title = title ?? blog.title;
+  blog.category = category ?? blog.category;
+  blog.body = body ?? blog.body;
 
   await blog.save();
 
