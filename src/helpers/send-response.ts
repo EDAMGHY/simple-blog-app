@@ -12,3 +12,11 @@ export const sendSuccessResponse = (
     data,
   });
 };
+export const sendErrorResponse = (
+  res: Response,
+  message: string,
+  statusCode = 400
+) => {
+  res.status(statusCode);
+  throw new Error(message);
+};

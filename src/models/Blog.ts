@@ -14,6 +14,11 @@ const BlogSchema: Schema = new mongoose.Schema(
       type: String,
       required: [true, "Body is required"],
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   { timestamps: true }
 );
