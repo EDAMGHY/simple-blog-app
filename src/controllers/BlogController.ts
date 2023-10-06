@@ -45,7 +45,11 @@ export const createBlog = asyncHandler(async (req: Request, res: Response) => {
   const userID = req?.user?._id || null;
 
   if (!userID) {
-    sendErrorResponse(res, "Please fill all the fields...", 400);
+    sendErrorResponse(
+      res,
+      "You should be authenticated to be able to see this...",
+      400
+    );
   }
 
   if (!title || !body || !category) {
@@ -60,9 +64,62 @@ export const createBlog = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const updateBlog = asyncHandler(async (req: Request, res: Response) => {
-  sendSuccessResponse(res, { msg: "Update Blog" });
+  const { title, body, category } = req.body;
+  const { id } = req.params;
+
+  const userID = req?.user?._id || null;
+
+  if (!userID) {
+    sendErrorResponse(
+      res,
+      "You should be authenticated to be able to see this...",
+      400
+    );
+  }
+
+  const blog = await Blog.findOne({ _id: id, user: userID });
+
+  if (!blog) {
+    sendErrorResponse(
+      res,
+      `You don't OWN this resource OR There is no blog with the ID [${id}]`,
+      404
+    );
+  }
+
+  if (title) blog.title = title;
+  if (category) blog.category = category;
+  if (body) blog.body = body;
+
+  await blog.save();
+
+  sendSuccessResponse(res, blog, "Blog Updated Succuessfully...");
 });
 
 export const deleteBlog = asyncHandler(async (req: Request, res: Response) => {
-  sendSuccessResponse(res, { msg: "Delete Blog" });
+  const { id } = req.params;
+
+  const userID = req?.user?._id || null;
+
+  if (!userID) {
+    sendErrorResponse(
+      res,
+      "You should be authenticated to be able to see this...",
+      400
+    );
+  }
+
+  const blog = await Blog.findOne({ _id: id, user: userID });
+
+  if (!blog) {
+    sendErrorResponse(
+      res,
+      `You don't OWN this resource OR There is no blog with the ID [${id}]`,
+      404
+    );
+  }
+
+  await Blog.findOneAndDelete({ _id: id, user: userID });
+
+  sendSuccessResponse(res, null, "Blog Delete Successfully...");
 });
