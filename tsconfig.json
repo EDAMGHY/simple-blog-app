@@ -20,5 +20,6 @@
       "@/helpers": ["./src/helpers/index"],
       "@/middleware": ["./src/middleware/index"]
     }
-  }
+  },
+  "include": ["src/**/*.ts"]
 }

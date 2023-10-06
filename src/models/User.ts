@@ -2,7 +2,6 @@ import mongoose, { Schema } from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
 import { IUser } from "@/types";
-import { NextFunction } from "express";
 
 const UserSchema = new Schema<IUser>(
   {
